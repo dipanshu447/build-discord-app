@@ -1,0 +1,22 @@
+{
+  "name": "discordbot",
+  "version": "1.0.0",
+  "description": "A Discord bot created using create-discord-bot",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "node deploy-commands.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "discord.js": "^14.20.0",
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "eslint": "^9.29.0"
+  }
+}
