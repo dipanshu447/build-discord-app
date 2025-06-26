@@ -36,7 +36,7 @@ GUILD_ID=<your development server ID>
 | Script             | Description                         |
 | ------------------ | ----------------------------------- |
 | `npm start`        | Starts the Discord bot              |
-| `npm run register`   | Registers all commands with Discord |
+| `npm run register` | Registers all commands with Discord |
 | `npm run lint`     | Runs ESLint on your codebase        |
 
 ## How It Works
