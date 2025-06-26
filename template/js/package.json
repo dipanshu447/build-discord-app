@@ -4,8 +4,9 @@
   "description": "A Discord bot created using create-discord-bot",
   "main": "index.js",
   "scripts": {
-    "deploy": "node deploy-commands.js",
-    "start": "node index.js"
+    "register": "node deploy-commands.js",
+    "start": "node index.js",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",

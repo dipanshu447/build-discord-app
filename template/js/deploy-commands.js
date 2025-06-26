@@ -32,7 +32,6 @@ const rest = new REST().setToken(process.env.DISCORD_TOKEN);
             }
         }
 
-
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
         const data = await rest.put(

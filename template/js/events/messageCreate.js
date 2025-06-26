@@ -12,6 +12,7 @@ export default {
             }
         } catch (error) {
             console.error('Error replying to message:', error);
+            
             // Attempt to notify the user, if permissions allow
             try {
                 await message.reply('⚠️ Something went wrong while processing your message.');
