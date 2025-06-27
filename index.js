@@ -15,10 +15,20 @@ const args = process.argv.slice(2);
 const firstArgs = args[0];
 
 let foldername = args.find(arg => !arg.startsWith('-')) || '';
+const useCurrentdir = foldername === '.';
 let packageName = '';
 let language = '';
 let cleanupInProgress = false;
-let targetPath = '';
+let targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
+
+if (!useCurrentdir && fs.existsSync(targetPath)) {
+    console.log(chalk.red("Folder already exists. Please use a different name."));
+    process.exit(1);
+} else if (useCurrentdir && fs.readdirSync(targetPath).length > 0) {
+    console.log(chalk.red("Current directory is not empty. Please use an empty folder or a new one."));
+    process.exit(1);
+}
+if (useCurrentdir) foldername = '';
 
 process.on('SIGINT', async () => {
     if (cleanupInProgress) return;
@@ -117,13 +127,7 @@ if (flagActions[firstArgs]) {
         process.exit(1);
     }
 
-    targetPath = path.join(process.cwd(), foldername);
     const templatePath = path.join(__dirname, 'template', language);
-
-    if (fs.existsSync(targetPath)) {
-        console.log(chalk.red("Folder already exists. Please use a different name."));
-        process.exit(1);
-    }
 
     const [major] = process.versions.node.split('.').map(Number);
     if (major < 18) {
@@ -138,7 +142,7 @@ if (flagActions[firstArgs]) {
     const spinner = ora('Creating your discord bot \n').start();
     await new Promise(res => setTimeout(res, 500));
     try {
-        fs.mkdirSync(targetPath);
+        if(!useCurrentdir) fs.mkdirSync(targetPath);
         spinner.text = 'Copying starter files...';
         await fs.copy(templatePath, targetPath);
         spinner.text = 'Adding package details...';
