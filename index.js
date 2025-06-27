@@ -6,45 +6,45 @@ import { fileURLToPath } from 'url';
 import { printSuccess } from './utils/printsuccess.js';
 import ora from 'ora';
 import ask from './utils/ask.js';
+import { help, version, yesall } from './utils/flags.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const knownFlags = ['--version', '-v', '--help', '-h', '--yes', '-y'];
+const args = process.argv.slice(2);
+const firstArgs = args[0];
 
-let foldername = process.argv[2];
+let foldername = args.find(arg => !arg.startsWith('-')) || '';
 let packageName = '';
 let language = '';
 
-// pending not done
-const knownFlags = ['--version', '-v', '--help', '-h'];
-const args = process.argv.slice(2);
-
-if (args.includes('--version') || args.includes('-v')) {
-    console.log('v1.0.0');
-    process.exit(0);
-}
-
-if (args.includes('--help') || args.includes('-h')) {
-    console.log(`
-Usage:
-  create-discord-bot <folder-name>
-
-Note: If no <folder-name> is provided, you will be prompted to enter one interactively.
-
-Options:
-  --version, -v   Show CLI version
-  --help, -h      Show this help message
-`);
-
-    process.exit(0);
+function skipInteraction() {
+    const { folderName, pkgName, lang } = yesall(foldername);
+    foldername = folderName;
+    packageName = pkgName;
+    language = lang;
 }
 
 const unknownFlags = args.filter(arg => arg.startsWith('-') && !knownFlags.includes(arg));
-
 if (unknownFlags.length > 0) {
     console.log(chalk.red(`\nError: Unknown option(s): ${unknownFlags.join(', ')}`));
     console.log(chalk.gray('Use -h or --help to view available options.'));
     process.exit(1);
 }
+
+const flagActions = {
+    '--help': help,
+    '-h': help,
+    '--version': version,
+    '-v': version,
+    '--yes': skipInteraction,
+    '-y': skipInteraction
+};
+
+if (flagActions[firstArgs]) {
+    flagActions[firstArgs]();
+}
+
 
 process.on('SIGINT', () => {
     console.log(chalk.red('\n✖ Operation cancelled by user.'));
@@ -65,8 +65,8 @@ process.on('SIGINT', () => {
 
     if (!packageName || packageName.trim() === '') {
         const defaultPkgName = foldername
-        ? foldername.toLowerCase().trim().replace(/\s+/g, '-')
-        : 'my-discord-bot';
+            ? foldername.toLowerCase().trim().replace(/\s+/g, '-')
+            : 'my-discord-bot';
 
         const { pkgname } = await ask({
             type: 'text',
