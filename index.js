@@ -7,6 +7,8 @@ import { printSuccess } from './utils/printsuccess.js';
 import ora from 'ora';
 import ask from './utils/ask.js';
 import { help, version, yesall } from './utils/flags.js';
+import { handleExistingDirConflict, isDirectoryNotEmpty } from './utils/directory.js';
+import { handleExistingFileConflicts  } from './utils/file.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,14 +22,6 @@ let packageName = '';
 let language = '';
 let cleanupInProgress = false;
 let targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
-
-if (!useCurrentdir && fs.existsSync(targetPath)) {
-    console.log(chalk.red("Folder already exists. Please use a different name."));
-    process.exit(1);
-} else if (useCurrentdir && fs.readdirSync(targetPath).length > 0) {
-    console.log(chalk.red("Current directory is not empty. Please use an empty folder or a new one."));
-    process.exit(1);
-}
 if (useCurrentdir) foldername = '';
 
 process.on('SIGINT', async () => {
@@ -122,12 +116,21 @@ if (flagActions[firstArgs]) {
         language = lang;
     }
 
+    const templatePath = path.join(__dirname, 'template', language);
+    if (useCurrentdir && fs.existsSync(targetPath)) {
+        if (isDirectoryNotEmpty(targetPath)) {
+            const dirAction = await handleExistingDirConflict(targetPath);
+            if (dirAction === 'ignored') global.skipExistingFiles = !(await handleExistingFileConflicts (templatePath, targetPath));
+        } else {
+            console.log(chalk.red("Folder already exists. Please use a different name."));
+            process.exit(1);
+        }
+    }
+
     if (!packageName || packageName.trim() === '') {
         console.log(chalk.red('Package name cannot be empty.'));
         process.exit(1);
     }
-
-    const templatePath = path.join(__dirname, 'template', language);
 
     const [major] = process.versions.node.split('.').map(Number);
     if (major < 18) {
@@ -142,9 +145,20 @@ if (flagActions[firstArgs]) {
     const spinner = ora('Creating your discord bot \n').start();
     await new Promise(res => setTimeout(res, 500));
     try {
-        if(!useCurrentdir) fs.mkdirSync(targetPath);
+        if (!useCurrentdir) fs.mkdirSync(targetPath);
         spinner.text = 'Copying starter files...';
-        await fs.copy(templatePath, targetPath);
+        if (useCurrentdir) {
+            for (const file of await fs.readdir(templatePath)) {
+                const src = path.join(templatePath, file);
+                const dest = path.join(targetPath, file);
+
+                if (!global.skipExistingFiles || !(await fs.pathExists(dest))) {
+                    await fs.copy(src, dest);
+                }
+            }
+        } else {
+            await fs.copy(templatePath, targetPath);
+        }
         spinner.text = 'Adding package details...';
         const pkgpath = path.join(targetPath, 'package.json');
         const pkgData = await fs.readJson(pkgpath);
@@ -163,9 +177,7 @@ if (flagActions[firstArgs]) {
 
 // make a readme for the create-discord-bot
 /* 
-    - handle other files exist in this directory issue
     - Allow passing --pkgname and --lang as CLI args
-    - . current directory template copying feature
+    - -y . or --yes . feature making it work
     - think of error ways
-    - whats esm? do i need that in my project?
 */
