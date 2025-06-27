@@ -16,7 +16,7 @@ export async function printSuccess(folderName, targetPath, packageName, version 
         `${chalk.yellow('>')} ${chalk.italic('cd')} ${chalk.white(folderName)}`,
         `${chalk.yellow('>')} ${chalk.italic('npm install')}`,
         `${chalk.yellow('>')} ${chalk.italic('rename')} ${chalk.white('.env.example')} ${chalk.italic('to')} ${chalk.whiteBright('.env')}`,
-        `${chalk.yellow('>')} ${chalk.italic('add your bot token to')} ${chalk.white('.env')}`,
+        `${chalk.yellow('>')} ${chalk.italic('add your bot token to')} ${chalk.whiteBright('.env')}`,
         `${chalk.yellow('>')} ${chalk.italic('npm start')}`
     ];
 

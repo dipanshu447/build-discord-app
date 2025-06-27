@@ -2,48 +2,98 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
-import prompts from 'prompts';
 import { fileURLToPath } from 'url';
 import { printSuccess } from './utils/printsuccess.js';
 import ora from 'ora';
+import ask from './utils/ask.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let foldername = process.argv[2];
-let packageName = foldername?.toLowerCase().replace(/\s+/g, '-');
-let language = 'js';
+let packageName = '';
+let language = '';
+
+// pending not done
+const knownFlags = ['--version', '-v', '--help', '-h'];
+const args = process.argv.slice(2);
+
+if (args.includes('--version') || args.includes('-v')) {
+    console.log('v1.0.0');
+    process.exit(0);
+}
+
+if (args.includes('--help') || args.includes('-h')) {
+    console.log(`
+Usage:
+  create-discord-bot <folder-name>
+
+Note: If no <folder-name> is provided, you will be prompted to enter one interactively.
+
+Options:
+  --version, -v   Show CLI version
+  --help, -h      Show this help message
+`);
+
+    process.exit(0);
+}
+
+const unknownFlags = args.filter(arg => arg.startsWith('-') && !knownFlags.includes(arg));
+
+if (unknownFlags.length > 0) {
+    console.log(chalk.red(`\nError: Unknown option(s): ${unknownFlags.join(', ')}`));
+    console.log(chalk.gray('Use -h or --help to view available options.'));
+    process.exit(1);
+}
+
+process.on('SIGINT', () => {
+    console.log(chalk.red('\n✖ Operation cancelled by user.'));
+    process.exit(1);
+});
+
 (async () => {
     if (!foldername || foldername.trim() === '') {
-        const res = await prompts([
-            {
-                type: 'text',
-                name: 'folder',
-                message: 'Project name:',
-                initial: `my-discord-bot`
-            },
-            {
-                type: 'text',
-                name: 'pkgname',
-                message: 'Package name:',
-                initial: (prev) => prev.toLowerCase().replace(/\s+/g, '-')
-            },
-            {
-                type: 'select',
-                name: 'language',
-                message: 'Select a language for your bot:',
-                choices: [
-                    { title: 'JavaScript', value: 'js' },
-                    { title: 'TypeScript (coming soon)', value: null, disabled: true },
-                    { title: 'Python (coming soon)', value: null, disabled: true },
-                ],
-                initial: 0
-            }
-        ]);
+        const { folder } = await ask({
+            type: 'text',
+            name: 'folder',
+            message: 'Project name:',
+            initial: `my-discord-bot`
+        });
 
-        foldername = res.folder;
-        packageName = res.pkgname;
-        language = res.language;
+        foldername = folder;
+    }
+
+    if (!packageName || packageName.trim() === '') {
+        const defaultPkgName = foldername
+        ? foldername.toLowerCase().trim().replace(/\s+/g, '-')
+        : 'my-discord-bot';
+
+        const { pkgname } = await ask({
+            type: 'text',
+            name: 'pkgname',
+            message: 'Package name:',
+            initial: defaultPkgName,
+            validate: name =>
+                /^[a-zA-Z0-9-_]+$/.test(name) ||
+                'Only letters, numbers, dashes, and underscores are allowed.'
+        });
+        packageName = pkgname;
+    }
+
+    if (!language || language.trim() === '') {
+        const { lang } = await ask({
+            type: 'select',
+            name: 'lang',
+            message: 'Select a language for your bot:',
+            choices: [
+                { title: 'JavaScript', value: 'js' },
+                { title: 'TypeScript (coming soon)', value: null, disabled: true },
+                { title: 'Python (coming soon)', value: null, disabled: true },
+            ],
+            initial: 0
+        });
+
+        language = lang;
     }
 
     if (!packageName || packageName.trim() === '') {
@@ -59,6 +109,16 @@ let language = 'js';
         process.exit(1);
     }
 
+    const [major] = process.versions.node.split('.').map(Number);
+    if (major < 18) {
+        console.log(chalk.yellow('Node.js v18+ is recommended for best compatibility.'));
+    }
+
+    console.log(chalk.green('\n✓ Summary'));
+    console.log(chalk.gray(`  Project name  : ${foldername}`));
+    console.log(chalk.gray(`  Package name  : ${packageName}`));
+    console.log(chalk.gray(`  Language      : ${language === 'js' ? 'JavaScript' : language}\n`));
+
     const spinner = ora('Creating your discord bot \n').start();
     await new Promise(res => setTimeout(res, 500));
     try {
@@ -73,6 +133,7 @@ let language = 'js';
         await new Promise(res => setTimeout(res, 700));
         spinner.succeed('Project setup completed!');
         await printSuccess(foldername, targetPath, packageName);
+        console.log(chalk.yellowBright('\nYour Discord bot is ready!'));
     } catch (error) {
         spinner.fail('Something went wrong!');
         console.error(error);
@@ -80,6 +141,11 @@ let language = 'js';
 })()
 
 
-// undertsand fs, path from node js
-// also make a readme.md in the template on how to use and stuff
-// think ur missing something
+// make a readme for the create-discord-bot
+/* 
+    - -y && -yes for my cli tool to generate the template in default names
+    - Allow passing --pkgname and --lang as CLI args
+    - . current directory template copying feature
+    - think of error ways
+    - whats esm? do i need that in my project?
+*/
