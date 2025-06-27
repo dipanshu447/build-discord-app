@@ -17,6 +17,28 @@ const firstArgs = args[0];
 let foldername = args.find(arg => !arg.startsWith('-')) || '';
 let packageName = '';
 let language = '';
+let cleanupInProgress = false;
+let targetPath = '';
+
+process.on('SIGINT', async () => {
+    if (cleanupInProgress) return;
+    cleanupInProgress = true;
+
+    const pathToClean = targetPath || (foldername ? path.join(process.cwd(), foldername) : null);
+
+    console.log(chalk.yellow('\nCleaning up before exit...'));
+    if (foldername && fs.existsSync(pathToClean)) {
+        try {
+            await fs.remove(pathToClean);
+            console.log(chalk.gray(`  Removed partial installation: ${pathToClean}`));
+        } catch (err) {
+            console.error(chalk.red('  Cleanup failed:'), err.message);
+        }
+    }
+
+    console.log(chalk.red('\n✖ Operation cancelled by user.'));
+    process.exit(1);
+});
 
 function skipInteraction() {
     const { folderName, pkgName, lang } = yesall(foldername);
@@ -44,12 +66,6 @@ const flagActions = {
 if (flagActions[firstArgs]) {
     flagActions[firstArgs]();
 }
-
-
-process.on('SIGINT', () => {
-    console.log(chalk.red('\n✖ Operation cancelled by user.'));
-    process.exit(1);
-});
 
 (async () => {
     if (!foldername || foldername.trim() === '') {
@@ -101,7 +117,7 @@ process.on('SIGINT', () => {
         process.exit(1);
     }
 
-    const targetPath = path.join(process.cwd(), foldername);
+    targetPath = path.join(process.cwd(), foldername);
     const templatePath = path.join(__dirname, 'template', language);
 
     if (fs.existsSync(targetPath)) {
@@ -143,7 +159,7 @@ process.on('SIGINT', () => {
 
 // make a readme for the create-discord-bot
 /* 
-    - -y && -yes for my cli tool to generate the template in default names
+    - handle other files exist in this directory issue
     - Allow passing --pkgname and --lang as CLI args
     - . current directory template copying feature
     - think of error ways
