@@ -29,7 +29,6 @@ const langNameArg = getArgValue('--lang') || getArgValue('-l');
 if (packageNameArg) packageName = packageNameArg;
 if (langNameArg) language = langNameArg;
 let cleanupInProgress = false;
-let targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
 if (useCurrentdir) foldername = '';
 
 process.on('SIGINT', async () => {
@@ -80,7 +79,7 @@ if (flagActions[firstArgs]) {
 }
 
 (async () => {
-    if (!foldername || foldername.trim() === '') {
+    if ((!foldername || foldername.trim() === '') && !useCurrentdir) {
         const { folder } = await ask({
             type: 'text',
             name: 'folder',
@@ -121,9 +120,20 @@ if (flagActions[firstArgs]) {
             initial: 0
         });
 
+        if (!lang) {
+            console.log(chalk.red('\n⚠ Language selection was cancelled or invalid.'));
+            process.exit(1);
+        }
+
         language = lang;
     }
 
+    if (!language || typeof language !== 'string') {
+        console.log(chalk.red('\nInvalid or unsupported language selected.'));
+        process.exit(1);
+    }
+
+    const targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
     const templatePath = path.join(__dirname, 'template', language);
     if (!fs.existsSync(templatePath)) {
         console.log(chalk.red(`\nLanguage "${language}" is not supported.`));
@@ -190,10 +200,7 @@ if (flagActions[firstArgs]) {
     }
 })()
 
-
 // make a readme for the create-discord-bot
 /* 
-    - Allow passing --pkgname and --lang as CLI args
-    - -y . or --yes . feature making it work
-    - think of error ways
+    - MIGRATE TO CLACK JS
 */
