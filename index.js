@@ -8,18 +8,26 @@ import ora from 'ora';
 import ask from './utils/ask.js';
 import { help, version, yesall } from './utils/flags.js';
 import { handleExistingDirConflict, isDirectoryNotEmpty } from './utils/directory.js';
-import { handleExistingFileConflicts  } from './utils/file.js';
+import { handleExistingFileConflicts } from './utils/file.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const knownFlags = ['--version', '-v', '--help', '-h', '--yes', '-y'];
+const knownFlags = ['--version', '-v', '--help', '-h', '--yes', '-y', '--pkgname', '-p', '--lang', '-l'];
 const args = process.argv.slice(2);
 const firstArgs = args[0];
+const getArgValue = (flag) => {
+    const index = args.indexOf(flag);
+    return index !== -1 && args[index + 1] && !args[index + 1].startsWith('-') ? args[index + 1] : null;
+}
 
 let foldername = args.find(arg => !arg.startsWith('-')) || '';
 const useCurrentdir = foldername === '.';
 let packageName = '';
 let language = '';
+const packageNameArg = getArgValue('--pkgname') || getArgValue('-p');
+const langNameArg = getArgValue('--lang') || getArgValue('-l');
+if (packageNameArg) packageName = packageNameArg;
+if (langNameArg) language = langNameArg;
 let cleanupInProgress = false;
 let targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
 if (useCurrentdir) foldername = '';
@@ -117,15 +125,23 @@ if (flagActions[firstArgs]) {
     }
 
     const templatePath = path.join(__dirname, 'template', language);
+    if (!fs.existsSync(templatePath)) {
+        console.log(chalk.red(`\nLanguage "${language}" is not supported.`));
+        const tempLangFols = await fs.readdir(path.join(__dirname, 'template'));
+        console.log(chalk.gray('Try one of: ') + chalk.whiteBright(tempLangFols.join(', ')));
+        process.exit(1);
+    }
+
     if (useCurrentdir && fs.existsSync(targetPath)) {
         if (isDirectoryNotEmpty(targetPath)) {
             const dirAction = await handleExistingDirConflict(targetPath);
-            if (dirAction === 'ignored') global.skipExistingFiles = !(await handleExistingFileConflicts (templatePath, targetPath));
+            if (dirAction === 'ignored') global.skipExistingFiles = !(await handleExistingFileConflicts(templatePath, targetPath));
         } else {
             console.log(chalk.red("Folder already exists. Please use a different name."));
             process.exit(1);
         }
     }
+
 
     if (!packageName || packageName.trim() === '') {
         console.log(chalk.red('Package name cannot be empty.'));
