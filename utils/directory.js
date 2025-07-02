@@ -38,7 +38,7 @@ export async function handleExistingDirConflict(dirpath) {
     }
 
     if (action === 'ignore') {
-        console.log(chalk.gray('⚠ Proceeding with existing files in directory.\n'));
+        console.log(chalk.gray('⚠ Proceeding with existing files in directory.'));
         return 'ignored';
     }
 }

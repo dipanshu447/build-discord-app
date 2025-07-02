@@ -9,6 +9,7 @@ import ask from './utils/ask.js';
 import { help, version, yesall } from './utils/flags.js';
 import { handleExistingDirConflict, isDirectoryNotEmpty } from './utils/directory.js';
 import { handleExistingFileConflicts } from './utils/file.js';
+import { intro, outro } from '@clack/prompts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +20,7 @@ const getArgValue = (flag) => {
     const index = args.indexOf(flag);
     return index !== -1 && args[index + 1] && !args[index + 1].startsWith('-') ? args[index + 1] : null;
 }
-
+let targetPath;
 let foldername = args.find(arg => !arg.startsWith('-')) || '';
 const useCurrentdir = foldername === '.';
 let packageName = '';
@@ -79,6 +80,7 @@ if (flagActions[firstArgs]) {
 }
 
 (async () => {
+    intro('create-discord-bot');
     if ((!foldername || foldername.trim() === '') && !useCurrentdir) {
         const { folder } = await ask({
             type: 'text',
@@ -133,7 +135,7 @@ if (flagActions[firstArgs]) {
         process.exit(1);
     }
 
-    const targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
+    targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
     const templatePath = path.join(__dirname, 'template', language);
     if (!fs.existsSync(templatePath)) {
         console.log(chalk.red(`\nLanguage "${language}" is not supported.`));
@@ -146,12 +148,8 @@ if (flagActions[firstArgs]) {
         if (isDirectoryNotEmpty(targetPath)) {
             const dirAction = await handleExistingDirConflict(targetPath);
             if (dirAction === 'ignored') global.skipExistingFiles = !(await handleExistingFileConflicts(templatePath, targetPath));
-        } else {
-            console.log(chalk.red("Folder already exists. Please use a different name."));
-            process.exit(1);
         }
     }
-
 
     if (!packageName || packageName.trim() === '') {
         console.log(chalk.red('Package name cannot be empty.'));
@@ -166,12 +164,18 @@ if (flagActions[firstArgs]) {
     console.log(chalk.green('\n✓ Summary'));
     console.log(chalk.gray(`  Project name  : ${foldername}`));
     console.log(chalk.gray(`  Package name  : ${packageName}`));
-    console.log(chalk.gray(`  Language      : ${language === 'js' ? 'JavaScript' : language}\n`));
+    console.log(chalk.gray(`  Language      : ${language}\n`));
 
     const spinner = ora('Creating your discord bot \n').start();
     await new Promise(res => setTimeout(res, 500));
     try {
-        if (!useCurrentdir) fs.mkdirSync(targetPath);
+        if (!useCurrentdir) {
+            if (fs.existsSync(targetPath)) {
+                console.log(chalk.red("Folder already exists. Please use a different name."));
+                process.exit(1);
+            }
+            fs.mkdirSync(targetPath);
+        }
         spinner.text = 'Copying starter files...';
         if (useCurrentdir) {
             for (const file of await fs.readdir(templatePath)) {
@@ -199,8 +203,3 @@ if (flagActions[firstArgs]) {
         console.error(error);
     }
 })()
-
-// make a readme for the create-discord-bot
-/* 
-    - MIGRATE TO CLACK JS
-*/
