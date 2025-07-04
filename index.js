@@ -176,7 +176,7 @@ if (flagActions[firstArgs]) {
         await fs.writeJson(pkgpath, pkgData, { spaces: 2 });
         await new Promise(res => setTimeout(res, 700));
         spin.stop('Project setup completed!');
-        note(`${color.dim(color.gray('cd my-discord-bot'))}\n${color.dim(color.gray('npm install'))}\n${color.dim(color.gray('Rename .env.example to .env'))}\n${color.dim(color.gray('Add your bot token to .env'))}\n${color.dim(color.gray('npm start'))}`,'Next Steps:');
+        note(`${color.dim(color.gray(`cd ${foldername}`))}\n${color.dim(color.gray('npm install'))}\n${color.dim(color.gray('Rename .env.example to .env'))}\n${color.dim(color.gray('Add your bot token to .env'))}\n${color.dim(color.gray('npm start'))}`,'Next Steps:');
         outro(color.italic('Having issues?' + color.blueBright(' https://github.com/dipanshu447/create-discord-bot/issues ')));
     } catch (error) {
         console.error(error);
