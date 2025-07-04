@@ -1,8 +1,8 @@
-import 'dotenv/config';
 import fs from 'node:fs';
 import path from 'node:path';
 import { Routes, REST } from 'discord.js';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import config from './config.js';
 
 const __fileName = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__fileName);
@@ -10,7 +10,7 @@ const foldersPath = path.join(__dirname, 'commands');
 
 console.log('Starting command deploy script...');
 const commands = [];
-const rest = new REST().setToken(process.env.DISCORD_TOKEN);
+const rest = new REST().setToken(config.token);
 (async () => {
     try {
         const commandsFolder = fs.readdirSync(foldersPath);
@@ -34,16 +34,16 @@ const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
-        const data = await rest.put(
-            Routes.applicationCommands(process.env.APP_ID),
-            { body: commands },
-        );
+        // const data = await rest.put(
+        //     Routes.applicationCommands(config.appid),
+        //     { body: commands },
+        // );
 
         // Optional: for registering commands in a single guild for testing
-        // const data = await rest.put(
-        //     Routes.applicationGuildCommands(process.env.APP_ID, process.env.GUILD_ID),
-        //     { body: commands }
-        // );
+        const data = await rest.put(
+            Routes.applicationGuildCommands(config.appid, config.guildid),
+            { body: commands }
+        );
 
         console.log(`Successfully reloaded ${data.length} application (/) commands.`);
     } catch (error) {

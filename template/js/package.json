@@ -1,11 +1,11 @@
 {
   "name": "discordbot",
   "version": "1.0.0",
-  "description": "A Discord bot created using create-discord-bot",
+  "description": "A Discord bot template generated using create-discord-bot",
   "main": "index.js",
   "scripts": {
-    "register": "node deploy-commands.js",
-    "start": "node index.js",
+    "register": "node ./src/deploy-commands.js",
+    "start": "node ./src/index.js",
     "lint": "eslint ."
   },
   "keywords": [],
