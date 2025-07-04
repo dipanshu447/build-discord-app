@@ -1,15 +1,13 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { printSuccess } from './utils/printsuccess.js';
-import ora from 'ora';
-import ask from './utils/ask.js';
+import { selectPrompt, textPrompt } from './utils/prompts.js';
 import { help, version, yesall } from './utils/flags.js';
 import { handleExistingDirConflict, isDirectoryNotEmpty } from './utils/directory.js';
 import { handleExistingFileConflicts } from './utils/file.js';
-import { intro, outro } from '@clack/prompts';
+import { cancel, intro, log, note, outro, spinner } from '@clack/prompts';
+import color from 'picocolors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,9 +18,9 @@ const getArgValue = (flag) => {
     const index = args.indexOf(flag);
     return index !== -1 && args[index + 1] && !args[index + 1].startsWith('-') ? args[index + 1] : null;
 }
-let targetPath;
 let foldername = args.find(arg => !arg.startsWith('-')) || '';
 const useCurrentdir = foldername === '.';
+let targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
 let packageName = '';
 let language = '';
 const packageNameArg = getArgValue('--pkgname') || getArgValue('-p');
@@ -38,17 +36,17 @@ process.on('SIGINT', async () => {
 
     const pathToClean = targetPath || (foldername ? path.join(process.cwd(), foldername) : null);
 
-    console.log(chalk.yellow('\nCleaning up before exit...'));
+    log.info(color.yellow('\nCleaning up before exit...'));
     if (foldername && fs.existsSync(pathToClean)) {
         try {
             await fs.remove(pathToClean);
-            console.log(chalk.gray(`  Removed partial installation: ${pathToClean}`));
+            log.info(`Removed partial installation: ${pathToClean}`);
         } catch (err) {
-            console.error(chalk.red('  Cleanup failed:'), err.message);
+            log.error(color.red('Cleanup failed:'), err.message);
         }
     }
 
-    console.log(chalk.red('\n✖ Operation cancelled by user.'));
+    cancel('Operation cancelled by user.');
     process.exit(1);
 });
 
@@ -61,8 +59,8 @@ function skipInteraction() {
 
 const unknownFlags = args.filter(arg => arg.startsWith('-') && !knownFlags.includes(arg));
 if (unknownFlags.length > 0) {
-    console.log(chalk.red(`\nError: Unknown option(s): ${unknownFlags.join(', ')}`));
-    console.log(chalk.gray('Use -h or --help to view available options.'));
+    log.error(color.red(`Error: Unknown option(s): ${unknownFlags.join(', ')}`));
+    log.info(`Use ${color.bold('-h')} or ${color.bold('--help')} to view available options.`);
     process.exit(1);
 }
 
@@ -80,15 +78,16 @@ if (flagActions[firstArgs]) {
 }
 
 (async () => {
-    intro('create-discord-bot');
+    intro(color.bgBlue(color.bold(color.black(' create-discord-bot '))));
     if ((!foldername || foldername.trim() === '') && !useCurrentdir) {
-        const { folder } = await ask({
-            type: 'text',
-            name: 'folder',
+        const folder = await textPrompt({
             message: 'Project name:',
-            initial: `my-discord-bot`
+            placeholder: `my-discord-bot`,
+            initialValue: 'my-discord-bot',
+            validate(value) {
+                if (value.length === 0) return 'Folder name can\'t be empty';
+            }
         });
-
         foldername = folder;
     }
 
@@ -97,50 +96,40 @@ if (flagActions[firstArgs]) {
             ? foldername.toLowerCase().trim().replace(/\s+/g, '-')
             : 'my-discord-bot';
 
-        const { pkgname } = await ask({
-            type: 'text',
-            name: 'pkgname',
+        const pkgname = await textPrompt({
             message: 'Package name:',
-            initial: defaultPkgName,
-            validate: name =>
-                /^[a-zA-Z0-9-_]+$/.test(name) ||
-                'Only letters, numbers, dashes, and underscores are allowed.'
+            initialValue: defaultPkgName,
+            placeholder: defaultPkgName,
+            validate(name) {
+                if (!/^[a-zA-Z0-9-_]+$/.test(name)) return 'Only letters, numbers, dashes, and underscores are allowed.';
+            }
         });
         packageName = pkgname;
     }
 
     if (!language || language.trim() === '') {
-        const { lang } = await ask({
-            type: 'select',
-            name: 'lang',
+        const lang = await selectPrompt({
             message: 'Select a language for your bot:',
-            choices: [
-                { title: 'JavaScript', value: 'js' },
-                { title: 'TypeScript (coming soon)', value: null, disabled: true },
-                { title: 'Python (coming soon)', value: null, disabled: true },
+            options: [
+                { value: 'js', label: 'JavaScript', hint: 'recommended' },
+                { value: null, label: 'TypeScript', hint: 'coming soon', disabled: true },
+                { value: null, label: 'Python', hint: 'coming soon', disabled: true },
             ],
-            initial: 0
-        });
-
-        if (!lang) {
-            console.log(chalk.red('\n⚠ Language selection was cancelled or invalid.'));
-            process.exit(1);
-        }
-
+        })
         language = lang;
     }
 
     if (!language || typeof language !== 'string') {
-        console.log(chalk.red('\nInvalid or unsupported language selected.'));
+        log.error(color.red('Invalid or unsupported language selected.'));
         process.exit(1);
     }
 
     targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
     const templatePath = path.join(__dirname, 'template', language);
     if (!fs.existsSync(templatePath)) {
-        console.log(chalk.red(`\nLanguage "${language}" is not supported.`));
+        log.error(color.red(`Language "${language}" is not supported.`));
         const tempLangFols = await fs.readdir(path.join(__dirname, 'template'));
-        console.log(chalk.gray('Try one of: ') + chalk.whiteBright(tempLangFols.join(', ')));
+        note(color.whiteBright(color.bold(tempLangFols.join(', '))),'Try one of:');
         process.exit(1);
     }
 
@@ -151,32 +140,23 @@ if (flagActions[firstArgs]) {
         }
     }
 
-    if (!packageName || packageName.trim() === '') {
-        console.log(chalk.red('Package name cannot be empty.'));
-        process.exit(1);
-    }
-
     const [major] = process.versions.node.split('.').map(Number);
     if (major < 18) {
-        console.log(chalk.yellow('Node.js v18+ is recommended for best compatibility.'));
+        log.warn(color.yellow('Node.js v18+ is recommended for best compatibility.'));
     }
 
-    console.log(chalk.green('\n✓ Summary'));
-    console.log(chalk.gray(`  Project name  : ${foldername}`));
-    console.log(chalk.gray(`  Package name  : ${packageName}`));
-    console.log(chalk.gray(`  Language      : ${language}\n`));
-
-    const spinner = ora('Creating your discord bot \n').start();
+    const spin = spinner();
+    spin.start('Creating your discord bot...');
     await new Promise(res => setTimeout(res, 500));
     try {
         if (!useCurrentdir) {
             if (fs.existsSync(targetPath)) {
-                console.log(chalk.red("Folder already exists. Please use a different name."));
+                log.error(color.red("\nFolder already exists. Please use a different name."));
                 process.exit(1);
             }
             fs.mkdirSync(targetPath);
         }
-        spinner.text = 'Copying starter files...';
+        spin.message('Copying starter files...');
         if (useCurrentdir) {
             for (const file of await fs.readdir(templatePath)) {
                 const src = path.join(templatePath, file);
@@ -189,17 +169,16 @@ if (flagActions[firstArgs]) {
         } else {
             await fs.copy(templatePath, targetPath);
         }
-        spinner.text = 'Adding package details...';
+        spin.message('Adding package details...');
         const pkgpath = path.join(targetPath, 'package.json');
         const pkgData = await fs.readJson(pkgpath);
         pkgData.name = packageName;
-        await fs.writeJson(pkgpath, pkgData, { spaces: 2 })
+        await fs.writeJson(pkgpath, pkgData, { spaces: 2 });
         await new Promise(res => setTimeout(res, 700));
-        spinner.succeed('Project setup completed!');
-        await printSuccess(foldername, targetPath, packageName);
-        console.log(chalk.yellowBright('\nYour Discord bot is ready!'));
+        spin.stop('Project setup completed!');
+        note(`${color.dim(color.gray('cd my-discord-bot'))}\n${color.dim(color.gray('npm install'))}\n${color.dim(color.gray('Rename .env.example to .env'))}\n${color.dim(color.gray('Add your bot token to .env'))}\n${color.dim(color.gray('npm start'))}`,'Next Steps:');
+        outro(color.italic('Having issues?' + color.blueBright(' https://github.com/dipanshu447/create-discord-bot/issues ')));
     } catch (error) {
-        spinner.fail('Something went wrong!');
         console.error(error);
     }
 })()
