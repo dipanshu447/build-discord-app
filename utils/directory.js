@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import { selectPrompt } from './prompts.js';
 import color from 'picocolors';
-import { log } from '@clack/prompts';
+import { log, spinner } from '@clack/prompts';
 
 export function isDirectoryNotEmpty(path) {
     return fs.readdirSync(path).length > 0;
@@ -10,6 +10,7 @@ export function isDirectoryNotEmpty(path) {
 export async function handleExistingDirConflict(dirpath) {
     const files = fs.readdirSync(dirpath);
     if (files.length === 0) return;
+    const spin = spinner();
 
     const action = await selectPrompt({
         message: color.yellow('Current directory is not empty. Choose how to proceed:'),
@@ -27,8 +28,9 @@ export async function handleExistingDirConflict(dirpath) {
 
     if (action === 'remove') {
         try {
-            fs.emptyDirSync(dirpath);
-            log.success(color.green('Existing files removed.'));
+            spin.start("Removing Existing files")
+            await fs.emptyDir(dirpath);
+            spin.stop(color.green('Existing files removed.'));
             return 'removed';
         } catch (error) {
             log.error(color.red('Failed to remove existing files:'),error);
