@@ -12,6 +12,7 @@ import color from 'picocolors';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const knownFlags = ['--version', '-v', '--help', '-h', '--yes', '-y', '--pkgname', '-p', '--lang', '-l'];
+const supportedLangs = ['js'];
 const args = process.argv.slice(2);
 const firstArgs = args[0];
 const getArgValue = (flag) => {
@@ -23,10 +24,10 @@ const useCurrentdir = foldername === '.';
 let targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
 let packageName = '';
 let language = '';
-const packageNameArg = getArgValue('--pkgname') || getArgValue('-p');
-const langNameArg = getArgValue('--lang') || getArgValue('-l');
-if (packageNameArg) packageName = packageNameArg;
-if (langNameArg) language = langNameArg;
+const pkgArg = getArgValue('--pkgname') || getArgValue('-p');
+const langArg = getArgValue('--lang') || getArgValue('-l');
+if (pkgArg) packageName = pkgArg;
+if (langArg) language = langArg;
 let cleanupInProgress = false;
 if (useCurrentdir) foldername = '';
 
@@ -79,6 +80,7 @@ if (flagActions[firstArgs]) {
 
 (async () => {
     intro(color.bgBlue(color.bold(color.black(' create-discord-bot '))));
+    if(useCurrentdir) log.info('Creating bot in the current directory.');
     if ((!foldername || foldername.trim() === '') && !useCurrentdir) {
         const folder = await textPrompt({
             message: 'Project name:',
@@ -119,24 +121,20 @@ if (flagActions[firstArgs]) {
         language = lang;
     }
 
-    if (!language || typeof language !== 'string') {
-        log.error(color.red('Invalid or unsupported language selected.'));
-        process.exit(1);
-    }
-
-    targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
-    const templatePath = path.join(__dirname, 'template', language);
-    if (!fs.existsSync(templatePath)) {
+    if (!supportedLangs.includes(language)) {
         log.error(color.red(`Language "${language}" is not supported.`));
         const tempLangFols = await fs.readdir(path.join(__dirname, 'template'));
         note(color.whiteBright(color.bold(tempLangFols.join(', '))),'Try one of:');
         process.exit(1);
     }
 
+    targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
+    const templatePath = path.join(__dirname, 'template', language);
+
     if (useCurrentdir && fs.existsSync(targetPath)) {
         if (isDirectoryNotEmpty(targetPath)) {
             const dirAction = await handleExistingDirConflict(targetPath);
-            if (dirAction === 'ignored') global.skipExistingFiles = !(await handleExistingFileConflicts(templatePath, targetPath));
+            if (dirAction === 'ignored') global.allowOverwrite = !(await handleExistingFileConflicts(templatePath, targetPath));
         }
     }
 
@@ -151,7 +149,7 @@ if (flagActions[firstArgs]) {
     try {
         if (!useCurrentdir) {
             if (fs.existsSync(targetPath)) {
-                log.error(color.red("\nFolder already exists. Please use a different name."));
+                log.error(color.red("Folder already exists. Please use a different name."));
                 process.exit(1);
             }
             fs.mkdirSync(targetPath);
@@ -162,7 +160,7 @@ if (flagActions[firstArgs]) {
                 const src = path.join(templatePath, file);
                 const dest = path.join(targetPath, file);
 
-                if (!global.skipExistingFiles || !(await fs.pathExists(dest))) {
+                if (!global.allowOverwrite || !(await fs.pathExists(dest))) {
                     await fs.copy(src, dest);
                 }
             }
