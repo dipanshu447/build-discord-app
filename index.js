@@ -20,8 +20,8 @@ const getArgValue = (flag) => {
     return index !== -1 && args[index + 1] && !args[index + 1].startsWith('-') ? args[index + 1] : null;
 }
 let foldername = args.find(arg => !arg.startsWith('-')) || '';
-const useCurrentdir = foldername === '.';
-let targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
+const isCurrentDir = foldername === '.';
+let targetPath = isCurrentDir ? process.cwd() : path.join(process.cwd(), foldername);
 let packageName = '';
 let language = '';
 const pkgArg = getArgValue('--pkgname') || getArgValue('-p');
@@ -29,7 +29,10 @@ const langArg = getArgValue('--lang') || getArgValue('-l');
 if (pkgArg) packageName = pkgArg;
 if (langArg) language = langArg;
 let cleanupInProgress = false;
-if (useCurrentdir) foldername = '';
+if (isCurrentDir) {
+    foldername = '';
+    targetPath = process.cwd();
+};
 
 process.on('SIGINT', async () => {
     if (cleanupInProgress) return;
@@ -80,8 +83,8 @@ if (flagActions[firstArgs]) {
 
 (async () => {
     intro(color.bgBlue(color.bold(color.black(' create-discord-bot '))));
-    if(useCurrentdir) log.info('Creating bot in the current directory.');
-    if ((!foldername || foldername.trim() === '') && !useCurrentdir) {
+    if(isCurrentDir) log.info('Creating bot in the current directory.');
+    if ((!foldername || foldername.trim() === '') && !isCurrentDir) {
         const folder = await textPrompt({
             message: 'Project name:',
             placeholder: `my-discord-bot`,
@@ -91,6 +94,7 @@ if (flagActions[firstArgs]) {
             }
         });
         foldername = folder;
+        targetPath = path.join(process.cwd(), foldername);
     }
 
     if (!packageName || packageName.trim() === '') {
@@ -128,10 +132,9 @@ if (flagActions[firstArgs]) {
         process.exit(1);
     }
 
-    targetPath = useCurrentdir ? process.cwd() : path.join(process.cwd(), foldername);
     const templatePath = path.join(__dirname, 'template', language);
 
-    if (useCurrentdir && fs.existsSync(targetPath)) {
+    if (isCurrentDir && fs.existsSync(targetPath)) {
         if (isDirectoryNotEmpty(targetPath)) {
             const dirAction = await handleExistingDirConflict(targetPath);
             if (dirAction === 'ignored') global.allowOverwrite = !(await handleExistingFileConflicts(templatePath, targetPath));
@@ -147,7 +150,7 @@ if (flagActions[firstArgs]) {
     spin.start('Creating your discord bot...');
     await new Promise(res => setTimeout(res, 500));
     try {
-        if (!useCurrentdir) {
+        if (!isCurrentDir) {
             if (fs.existsSync(targetPath)) {
                 log.error(color.red("Folder already exists. Please use a different name."));
                 process.exit(1);
@@ -155,7 +158,7 @@ if (flagActions[firstArgs]) {
             fs.mkdirSync(targetPath);
         }
         spin.message('Copying starter files...');
-        if (useCurrentdir) {
+        if (isCurrentDir) {
             for (const file of await fs.readdir(templatePath)) {
                 const src = path.join(templatePath, file);
                 const dest = path.join(targetPath, file);
@@ -174,9 +177,16 @@ if (flagActions[firstArgs]) {
         await fs.writeJson(pkgpath, pkgData, { spaces: 2 });
         await new Promise(res => setTimeout(res, 700));
         spin.stop('Project setup completed!');
-        note(`${color.dim(color.gray(`cd ${foldername}`))}\n${color.dim(color.gray('npm install'))}\n${color.dim(color.gray('Rename .env.example to .env'))}\n${color.dim(color.gray('Add your bot token to .env'))}\n${color.dim(color.gray('npm start'))}`,'Next Steps:');
+        note([
+            !isCurrentDir ? color.dim(color.gray(`cd ${foldername}`)) : null,
+            color.dim(color.gray('npm install')),
+            color.dim(color.gray('Rename .env.example to .env')),
+            color.dim(color.gray('Add your bot token to .env')),
+            color.dim(color.gray('npm run register')),
+            color.dim(color.gray('npm start'))
+        ].filter(Boolean).join('\n'),'Next Steps:');
         outro(color.italic('Having issues?' + color.blueBright(' https://github.com/dipanshu447/create-discord-bot/issues ')));
     } catch (error) {
-        console.error(error);
+        log.error(color.red("Unexpected error occurred:"), error);
     }
 })()
