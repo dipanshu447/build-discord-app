@@ -18,7 +18,6 @@ ${color.bold('Options:')}
 ${color.bold('Notes:')}
   - If no <folder-name> is provided, you will be prompted to enter one.
   - You can use '.' to initialize the bot in the current directory.
-  - Flags like --yes must come first to be recognized.
 
 ${color.bold('Having issues?')} Feel free to open an issue at:
 ${color.blue('https://github.com/dipanshu447/create-discord-bot/issues')}`
@@ -33,7 +32,7 @@ export function version() {
 
 export function yesall(presentFolder = '') {
   const folderName = presentFolder || 'my-discord-bot';
-  const pkgName = folderName.toLowerCase().trim().replace(/\s+/g, '-');
+  const pkgName = folderName === '.' ? 'my-discord-bot' : folderName.toLowerCase().trim().replace(/\s+/g, '-');
   const lang = 'js';
 
   log.info(color.cyan(`Skipping prompts. Using default options...`));

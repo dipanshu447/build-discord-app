@@ -6,7 +6,7 @@ import { selectPrompt, textPrompt } from './utils/prompts.js';
 import { help, version, yesall } from './utils/flags.js';
 import { handleExistingDirConflict, isDirectoryNotEmpty } from './utils/directory.js';
 import { handleExistingFileConflicts } from './utils/file.js';
-import { cancel, log, note, outro, spinner } from '@clack/prompts';
+import { log, note, outro, spinner } from '@clack/prompts';
 import color from 'picocolors';
 import { parseCLIArgs } from './utils/args.js';
 
@@ -25,38 +25,17 @@ let {
 } = parseCLIArgs(args, knownFlags);
 let packageName = pkgArg || '';
 let language = langArg || '';
-let cleanupInProgress = false;
 const isCurrentDir = foldername === '.';
 let targetPath = isCurrentDir ? process.cwd() : path.join(process.cwd(), foldername);
 
-if(firstArg === '--help' || firstArg === '-h') help();
-if(firstArg === '--version' || firstArg === '-v') version();
-if(hasYesFlag) skipInteraction();
+if (firstArg === '--help' || firstArg === '-h') help();
+if (firstArg === '--version' || firstArg === '-v') version();
+if (hasYesFlag) skipInteraction();
 
 if (isCurrentDir) {
     foldername = '';
     targetPath = process.cwd();
 };
-
-process.on('SIGINT', async () => {
-    if (cleanupInProgress) return;
-    cleanupInProgress = true;
-
-    const pathToClean = targetPath || (foldername ? path.join(process.cwd(), foldername) : null);
-
-    log.info(color.yellow('\nCleaning up before exit...'));
-    if (foldername && fs.existsSync(pathToClean)) {
-        try {
-            await fs.remove(pathToClean);
-            log.info(`Removed partial installation: ${pathToClean}`);
-        } catch (err) {
-            log.error(color.red('Cleanup failed:'), err.message);
-        }
-    }
-
-    cancel('Operation cancelled by user.');
-    process.exit(1);
-});
 
 function skipInteraction() {
     const presentFolder = foldername || '';
@@ -69,7 +48,6 @@ function skipInteraction() {
         global.allowOverwrite = true;
     }
 }
-
 
 if (unknownFlags.length > 0) {
     log.error(color.red(`Error: Unknown option(s): ${unknownFlags.join(', ')}`));
@@ -147,10 +125,16 @@ if (unknownFlags.length > 0) {
     try {
         if (!isCurrentDir) {
             if (fs.existsSync(targetPath)) {
-                log.error(color.red("Folder already exists. Please use a different name."));
-                process.exit(1);
+                const isEmpty = (await fs.readdir(targetPath)).length === 0;
+                if (!isEmpty) {
+                    log.error(color.red("Folder already exists and is not empty. Please use a different name or choose a different option."));
+                    process.exit(1);
+                } else {
+                    log.info(color.yellow("Target folder exists but is empty. Proceeding..."));
+                }
+            } else {
+                fs.mkdirSync(targetPath);
             }
-            fs.mkdirSync(targetPath);
         }
         spin.message('Copying starter files...');
         if (isCurrentDir) {
