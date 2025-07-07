@@ -33,12 +33,12 @@ const flagActions = {
     '--yes': skipInteraction,
     '-y': skipInteraction
 };
+const isCurrentDir = foldername === '.';
 
 if (flagActions[firstArg]) {
     flagActions[firstArg]();
 }
 
-const isCurrentDir = foldername === '.';
 let targetPath = isCurrentDir ? process.cwd() : path.join(process.cwd(), foldername);
 if (isCurrentDir) {
     foldername = '';
@@ -48,7 +48,7 @@ if (isCurrentDir) {
 process.on('SIGINT', async () => {
     if (cleanupInProgress) return;
     cleanupInProgress = true;
-    
+
     const pathToClean = targetPath || (foldername ? path.join(process.cwd(), foldername) : null);
 
     log.info(color.yellow('\nCleaning up before exit...'));
@@ -66,10 +66,14 @@ process.on('SIGINT', async () => {
 });
 
 function skipInteraction() {
-    const { folderName, pkgName, lang } = yesall();
-    foldername = folderName;
+    const { folderName, pkgName, lang } = yesall(isCurrentDir);
+    foldername = isCurrentDir ? '.' : folderName;
     packageName = pkgName;
     language = lang;
+
+    if (isCurrentDir) {
+        global.allowOverwrite = true;
+    }
 }
 
 
