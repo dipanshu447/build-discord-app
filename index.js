@@ -80,7 +80,7 @@ if (unknownFlags.length > 0) {
             initialValue: defaultPkgName,
             placeholder: defaultPkgName,
             validate(name) {
-                if (!/^[a-zA-Z0-9-_]+$/.test(name)) return 'Only letters, numbers, dashes, and underscores are allowed.';
+                if (!/^(?:@[a-z0-9-*~][a-z0-9-*._~]*)?[a-z0-9-~][a-z0-9-._~]*$/.test(name)) return 'Invalid name. Use: lowercase, numbers, -, ~, . only';
             }
         });
         packageName = pkgname;
@@ -102,6 +102,11 @@ if (unknownFlags.length > 0) {
         log.error(color.red(`Language "${language}" is not supported.`));
         const tempLangFols = await fs.readdir(path.join(__dirname, 'template'));
         note(color.whiteBright(color.bold(tempLangFols.join(', '))), 'Try one of:');
+        process.exit(1);
+    }
+
+    if (!/^(?:@[a-z0-9-*~][a-z0-9-*._~]*)?[a-z0-9-~][a-z0-9-._~]*$/.test(packageName)) {
+        log.error(color.red('Invalid package name. Use: lowercase, numbers, -, ~, . only'));
         process.exit(1);
     }
 
@@ -129,8 +134,6 @@ if (unknownFlags.length > 0) {
                 if (!isEmpty) {
                     log.error(color.red("Folder already exists and is not empty. Please use a different name or choose a different option."));
                     process.exit(1);
-                } else {
-                    log.info(color.yellow("Target folder exists but is empty. Proceeding..."));
                 }
             } else {
                 fs.mkdirSync(targetPath);
