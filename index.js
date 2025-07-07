@@ -8,26 +8,24 @@ import { handleExistingDirConflict, isDirectoryNotEmpty } from './utils/director
 import { handleExistingFileConflicts } from './utils/file.js';
 import { cancel, intro, log, note, outro, spinner } from '@clack/prompts';
 import color from 'picocolors';
+import { parseCLIArgs } from './utils/args.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const knownFlags = ['--version', '-v', '--help', '-h', '--yes', '-y', '--pkgname', '-p', '--lang', '-l'];
 const supportedLangs = ['js'];
 const args = process.argv.slice(2);
-const firstArgs = args[0];
-const getArgValue = (flag) => {
-    const index = args.indexOf(flag);
-    return index !== -1 && args[index + 1] && !args[index + 1].startsWith('-') ? args[index + 1] : null;
-}
-let foldername = args.find(arg => !arg.startsWith('-')) || '';
+const {
+    foldername,
+    firstArg,
+    unknownFlags,
+    pkgArg,
+    langArg
+} = parseCLIArgs(args, knownFlags);
 const isCurrentDir = foldername === '.';
 let targetPath = isCurrentDir ? process.cwd() : path.join(process.cwd(), foldername);
-let packageName = '';
-let language = '';
-const pkgArg = getArgValue('--pkgname') || getArgValue('-p');
-const langArg = getArgValue('--lang') || getArgValue('-l');
-if (pkgArg) packageName = pkgArg;
-if (langArg) language = langArg;
+let packageName = pkgArg || '';
+let language = langArg || '';
 let cleanupInProgress = false;
 if (isCurrentDir) {
     foldername = '';
@@ -61,7 +59,6 @@ function skipInteraction() {
     language = lang;
 }
 
-const unknownFlags = args.filter(arg => arg.startsWith('-') && !knownFlags.includes(arg));
 if (unknownFlags.length > 0) {
     log.error(color.red(`Error: Unknown option(s): ${unknownFlags.join(', ')}`));
     log.info(`Use ${color.bold('-h')} or ${color.bold('--help')} to view available options.`);
@@ -77,13 +74,13 @@ const flagActions = {
     '-y': skipInteraction
 };
 
-if (flagActions[firstArgs]) {
-    flagActions[firstArgs]();
+if (flagActions[firstArg]) {
+    flagActions[firstArg]();
 }
 
 (async () => {
     intro(color.bgBlue(color.bold(color.black(' create-discord-bot '))));
-    if(isCurrentDir) log.info('Creating bot in the current directory.');
+    if (isCurrentDir) log.info('Creating bot in the current directory.');
     if ((!foldername || foldername.trim() === '') && !isCurrentDir) {
         const folder = await textPrompt({
             message: 'Project name:',
@@ -128,7 +125,7 @@ if (flagActions[firstArgs]) {
     if (!supportedLangs.includes(language)) {
         log.error(color.red(`Language "${language}" is not supported.`));
         const tempLangFols = await fs.readdir(path.join(__dirname, 'template'));
-        note(color.whiteBright(color.bold(tempLangFols.join(', '))),'Try one of:');
+        note(color.whiteBright(color.bold(tempLangFols.join(', '))), 'Try one of:');
         process.exit(1);
     }
 
@@ -184,7 +181,7 @@ if (flagActions[firstArgs]) {
             color.dim(color.gray('Add your bot token to .env')),
             color.dim(color.gray('npm run register')),
             color.dim(color.gray('npm start'))
-        ].filter(Boolean).join('\n'),'Next Steps:');
+        ].filter(Boolean).join('\n'), 'Next Steps:');
         outro(color.italic('Having issues?' + color.blueBright(' https://github.com/dipanshu447/create-discord-bot/issues ')));
     } catch (error) {
         log.error(color.red("Unexpected error occurred:"), error);
