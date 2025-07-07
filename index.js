@@ -6,7 +6,7 @@ import { selectPrompt, textPrompt } from './utils/prompts.js';
 import { help, version, yesall } from './utils/flags.js';
 import { handleExistingDirConflict, isDirectoryNotEmpty } from './utils/directory.js';
 import { handleExistingFileConflicts } from './utils/file.js';
-import { cancel, intro, log, note, outro, spinner } from '@clack/prompts';
+import { cancel, log, note, outro, spinner } from '@clack/prompts';
 import color from 'picocolors';
 import { parseCLIArgs } from './utils/args.js';
 
@@ -20,26 +20,19 @@ let {
     firstArg,
     unknownFlags,
     pkgArg,
-    langArg
+    langArg,
+    hasYesFlag
 } = parseCLIArgs(args, knownFlags);
 let packageName = pkgArg || '';
 let language = langArg || '';
 let cleanupInProgress = false;
-const flagActions = {
-    '--help': help,
-    '-h': help,
-    '--version': version,
-    '-v': version,
-    '--yes': skipInteraction,
-    '-y': skipInteraction
-};
 const isCurrentDir = foldername === '.';
-
-if (flagActions[firstArg]) {
-    flagActions[firstArg]();
-}
-
 let targetPath = isCurrentDir ? process.cwd() : path.join(process.cwd(), foldername);
+
+if(firstArg === '--help' || firstArg === '-h') help();
+if(firstArg === '--version' || firstArg === '-v') version();
+if(hasYesFlag) skipInteraction();
+
 if (isCurrentDir) {
     foldername = '';
     targetPath = process.cwd();
@@ -66,12 +59,13 @@ process.on('SIGINT', async () => {
 });
 
 function skipInteraction() {
-    const { folderName, pkgName, lang } = yesall(isCurrentDir);
+    const presentFolder = foldername || '';
+    const { folderName, pkgName, lang } = yesall(presentFolder);
     foldername = isCurrentDir ? '.' : folderName;
     packageName = pkgName;
     language = lang;
 
-    if (isCurrentDir) {
+    if (foldername == '.') {
         global.allowOverwrite = true;
     }
 }

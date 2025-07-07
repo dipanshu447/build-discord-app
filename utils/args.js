@@ -12,11 +12,11 @@ export function parseCLIArgs(args, knownFlags) {
     const hasYesFlag = args.includes('--yes') || args.includes('-y');
     const positionalArg = args.find(arg => !arg.startsWith('-')) || '';
 
-    if(hasYesFlag && positionalArg && positionalArg !== '.'){
-        log.warn(color.yellow(`Note: Positional argument "${positionalArg}" is ignored in --yes mode.`));
+    if(hasYesFlag && positionalArg == ''){
+        log.warn(color.yellow(`Note: No folder name provided. Using default folder.`));
     }
 
-    const foldername = hasYesFlag ? (positionalArg === '.' ? '.' : '') : positionalArg;
+    const foldername = positionalArg || '';
     const unknownFlags = args.filter(arg => arg.startsWith('-') && !knownFlags.includes(arg));
 
     const pkgArg = getArgValue('--pkgname') || getArgValue('-p');
@@ -27,6 +27,7 @@ export function parseCLIArgs(args, knownFlags) {
         firstArg,
         unknownFlags,
         pkgArg,
-        langArg
+        langArg,
+        hasYesFlag
     }
 }

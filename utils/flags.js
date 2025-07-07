@@ -31,9 +31,9 @@ export function version() {
   process.exit(0);
 }
 
-export function yesall(useCurrentDir = false) {
-  const folderName = useCurrentDir ? '.' : 'my-discord-bot';
-  const pkgName = folderName === '.' ? 'my-discord-bot' : folderName.toLowerCase().trim().replace(/\s+/g, '-');
+export function yesall(presentFolder = '') {
+  const folderName = presentFolder || 'my-discord-bot';
+  const pkgName = folderName.toLowerCase().trim().replace(/\s+/g, '-');
   const lang = 'js';
 
   log.info(color.cyan(`Skipping prompts. Using default options...`));
