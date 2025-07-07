@@ -15,18 +15,31 @@ const __dirname = path.dirname(__filename);
 const knownFlags = ['--version', '-v', '--help', '-h', '--yes', '-y', '--pkgname', '-p', '--lang', '-l'];
 const supportedLangs = ['js'];
 const args = process.argv.slice(2);
-const {
+let {
     foldername,
     firstArg,
     unknownFlags,
     pkgArg,
     langArg
 } = parseCLIArgs(args, knownFlags);
-const isCurrentDir = foldername === '.';
-let targetPath = isCurrentDir ? process.cwd() : path.join(process.cwd(), foldername);
 let packageName = pkgArg || '';
 let language = langArg || '';
 let cleanupInProgress = false;
+const flagActions = {
+    '--help': help,
+    '-h': help,
+    '--version': version,
+    '-v': version,
+    '--yes': skipInteraction,
+    '-y': skipInteraction
+};
+
+if (flagActions[firstArg]) {
+    flagActions[firstArg]();
+}
+
+const isCurrentDir = foldername === '.';
+let targetPath = isCurrentDir ? process.cwd() : path.join(process.cwd(), foldername);
 if (isCurrentDir) {
     foldername = '';
     targetPath = process.cwd();
@@ -35,7 +48,7 @@ if (isCurrentDir) {
 process.on('SIGINT', async () => {
     if (cleanupInProgress) return;
     cleanupInProgress = true;
-
+    
     const pathToClean = targetPath || (foldername ? path.join(process.cwd(), foldername) : null);
 
     log.info(color.yellow('\nCleaning up before exit...'));
@@ -53,11 +66,12 @@ process.on('SIGINT', async () => {
 });
 
 function skipInteraction() {
-    const { folderName, pkgName, lang } = yesall(foldername);
+    const { folderName, pkgName, lang } = yesall();
     foldername = folderName;
     packageName = pkgName;
     language = lang;
 }
+
 
 if (unknownFlags.length > 0) {
     log.error(color.red(`Error: Unknown option(s): ${unknownFlags.join(', ')}`));
@@ -65,21 +79,7 @@ if (unknownFlags.length > 0) {
     process.exit(1);
 }
 
-const flagActions = {
-    '--help': help,
-    '-h': help,
-    '--version': version,
-    '-v': version,
-    '--yes': skipInteraction,
-    '-y': skipInteraction
-};
-
-if (flagActions[firstArg]) {
-    flagActions[firstArg]();
-}
-
 (async () => {
-    intro(color.bgBlue(color.bold(color.black(' create-discord-bot '))));
     if (isCurrentDir) log.info('Creating bot in the current directory.');
     if ((!foldername || foldername.trim() === '') && !isCurrentDir) {
         const folder = await textPrompt({
