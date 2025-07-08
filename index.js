@@ -113,13 +113,15 @@ if (unknownFlags.length > 0) {
     }
     
     const spin = spinner();
-    spin.start('Creating your discord bot...');
+    spin.start('Getting your discord app template ready...');
 
     const templatePath = await cloneTemplate(language);
     if (!templatePath || !(await fs.pathExists(templatePath))) {
         log.error(color.red('Could not locate or download the template files.'));
         process.exit(1);
     }
+
+    spin.stop('Template work Completed');
 
     if (isCurrentDir && fs.existsSync(targetPath)) {
         if (isDirectoryNotEmpty(targetPath)) {
@@ -128,6 +130,7 @@ if (unknownFlags.length > 0) {
         }
     }
 
+    spin.start('Creating your discord app..');
     try {
         if (!isCurrentDir) {
             if (fs.existsSync(targetPath)) {
@@ -159,6 +162,7 @@ if (unknownFlags.length > 0) {
         pkgData.name = packageName;
         await fs.writeJson(pkgpath, pkgData, { spaces: 2 });
         await new Promise(res => setTimeout(res, 700));
+        await fs.remove(templatePath);
         spin.stop('Project setup completed!');
         note([
             !isCurrentDir ? color.dim(color.gray(`cd ${foldername}`)) : null,

@@ -5,8 +5,8 @@ import { tmpdir } from 'os';
 import color from "picocolors";
 
 export default async function cloneTemplates(lang) {
-    const tempPath = join(tmpdir(), `create-discord-bot-${Date.now()}`);
-    const repoPath = `dipanshu447/create-discord-bot-templates/${lang}`;
+    const tempPath = join(tmpdir(), `create-discord-app-${Date.now()}`);
+    const repoPath = `dipanshu447/create-discord-app-templates/${lang}`;
 
     const emitter = degit(repoPath, {
         cache: false,
