@@ -3,8 +3,8 @@
 <div align="center">
 
 ![Discord Bot CLI](https://img.shields.io/badge/Discord-Bot%20CLI-5865F2?style=for-the-badge&logo=discord&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Node.js](https://img.shields.io/badge/Node.js-24+-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES2024-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
 **The fastest way to create production-ready Discord bots**
 
@@ -35,6 +35,7 @@ Interactive prompts • GitHub-powered templates • Smart conflict resolution �
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Tech Stack](#tech-stack)
 - [Usage](#usage)
 - [CLI Options](#cli-options)
 - [Features](#features)
@@ -111,6 +112,15 @@ create-discord-app .
 create-discord-app my-bot --yes
 ```
 
+## Tech Stack
+
+- **Node.js**
+- **ES Modules**
+- **Clack Prompts** - Interactive CLI prompts
+- **Degit** - Template cloning from GitHub
+- **fs-extra** - Robust file operations
+- **picocolors** - Minimal terminal styling
+
 ## Usage
 
 ### Basic Syntax
@@ -143,7 +153,7 @@ create-discord-app .
 create-discord-app my-bot --yes
 
 # Specify package name
-create-discord-app my-bot --pkgname @myorg/discord-bot
+create-discord-app my-bot --pkgname discord-bot
 
 # Specify language
 create-discord-app my-bot --lang js
@@ -159,7 +169,7 @@ create-discord-app my-bot --pkgname my-bot-pkg --lang js --yes
 | `--help` | `-h` | Show help information | `create-discord-app --help` |
 | `--version` | `-v` | Show version number | `create-discord-app --version` |
 | `--yes` | `-y` | Skip all prompts, use defaults | `create-discord-app my-bot --yes` |
-| `--pkgname` | `-p` | Specify npm package name | `create-discord-app my-bot -p @org/bot` |
+| `--pkgname` | `-p` | Specify package name | `create-discord-app my-bot -p @orgbot` |
 | `--lang` | `-l` | Set programming language | `create-discord-app my-bot -l js` |
 
 ### Flag Details
@@ -175,7 +185,6 @@ When using the `--yes` flag, the CLI will:
 #### `--pkgname` / `-p` (Package Name)
 
 - Must follow npm package naming rules
-- Supports scoped packages (e.g., `@myorg/bot-name`) [doubt]
 - Automatically validates against npm naming conventions
 - Pattern: `^(?:@[a-z0-9-*~][a-z0-9-*._~]*)?[a-z0-9-~][a-z0-9-._~]*$`
 
@@ -262,7 +271,6 @@ Each template includes:
 **Solution**: Package names must follow npm conventions:
 - Lowercase letters only
 - Can contain numbers, hyphens, tildes, and dots
-- Can be scoped with `@organization/package-name`
 
 #### Directory Not Empty
 
@@ -449,9 +457,10 @@ Have an idea? [Create a feature request](https://github.com/dipanshu447/create-d
 
 4. **Test your changes**
    ```bash
-   npm test
-   npm run test:cli
+   # Manual test run
+   npm start
    ```
+> Note: Automated testing coming soon. For now, test using manual commands like npm start.
 
 5. **Commit and push**
    ```bash

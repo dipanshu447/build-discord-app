@@ -8,8 +8,17 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "prepublishOnly": "npm run lint && npm audit --audit-level=high"
   },
+  "files": [
+    "index.js",
+    "utils/",
+    "LICENSE",
+    "README.md",
+    "package.json",
+    "package-lock.json"
+  ],
   "keywords": [
     "discordjs",
     "discord-app", 
