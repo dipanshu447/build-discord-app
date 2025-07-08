@@ -127,7 +127,7 @@ build-discord-app my-bot --pkgname my-pkg --lang js --yes
 
 ## Templates
 
-Templates are hosted in the [`discord-app-templates`](https://github.com/dipanshu447/discord-app-templates) repository.
+Templates are hosted in the [`build-discord-app-templates`](https://github.com/dipanshu447/build-discord-app-templates) repository.
 
 Each template includes:
 
