@@ -9,6 +9,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "lint": "eslint .",
     "prepublishOnly": "npm run lint && npm audit --audit-level=high"
   },
   "files": [
@@ -21,16 +22,16 @@
   ],
   "keywords": [
     "discordjs",
-    "discord-app", 
-    "create-discord-app", 
+    "discord-app",
+    "create-discord-app",
     "cli",
     "scaffolding",
     "slash-commands",
-    "discord-bot", 
+    "discord-bot",
     "djs",
-    "discord-app-template", 
-    "app-creation", 
-    "discordjs-app", 
+    "discord-app-template",
+    "app-creation",
+    "discordjs-app",
     "generator",
     "boilerplate"
   ],
@@ -52,5 +53,10 @@
   "bugs": {
     "url": "https://github.com/dipanshu447/create-discord-app/issues"
   },
-  "homepage": "https://github.com/dipanshu447/create-discord-app#readme"
+  "homepage": "https://github.com/dipanshu447/create-discord-app#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "eslint": "^9.30.1",
+    "globals": "^16.3.0"
+  }
 }
