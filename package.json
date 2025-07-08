@@ -1,5 +1,5 @@
 {
-  "name": "@dipanshu/discord-app",
+  "name": "discord-app",
   "version": "1.0.0",
   "description": "A CLI tool to scaffold your own Discord bot project quickly",
   "bin": {

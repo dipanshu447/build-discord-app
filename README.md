@@ -5,7 +5,7 @@
 ![Discord Bot CLI](https://img.shields.io/badge/Discord-Bot%20CLI-5865F2?style=for-the-badge\&logo=discord\&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge\&logo=node.js\&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES2024-F7DF1E?style=for-the-badge\&logo=javascript\&logoColor=black)
-[![npm](https://img.shields.io/badge/npm-v1.0.0-CB3837?style=for-the-badge\&logo=npm\&logoColor=white)](https://www.npmjs.com/package/@dipanshu/discord-app)
+[![npm](https://img.shields.io/badge/npm-v1.0.0-CB3837?style=for-the-badge\&logo=npm\&logoColor=white)](https://www.npmjs.com/package/discord-app)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge\&logo=open-source-initiative\&logoColor=white)](https://opensource.org/licenses/MIT)
 
 **The fastest way to create production-ready Discord bots**
@@ -20,9 +20,7 @@ Interactive prompts • GitHub-powered templates • Smart conflict resolution �
 
 ## What is create-discord-app?
 
-`@dipanshu/discord-app` is a modern CLI tool that scaffolds production-ready Discord bot applications in seconds. It leverages GitHub-hosted templates and provides an intuitive setup experience with intelligent conflict resolution and automatic project configuration.
-
-> ⚠️ This package is named `@dipanshu/discord-app` instead of the usual `create-discord-app` because the base name was already taken on npm.
+`discord-app` is a modern CLI tool that scaffolds production-ready Discord bot applications in seconds. It leverages GitHub-hosted templates and provides an intuitive setup experience with intelligent conflict resolution and automatic project configuration.
 
 ### Built with ❤️ during my 100 Days of Code
 
@@ -50,7 +48,7 @@ This CLI is built using the following technologies:
 
 ## Naming Notice
 
-This CLI is invoked using `npm create discord-app`, which maps to the scoped npm package `@dipanshu/discord-app`. The original name `create-discord-app` was already taken on npm, so this version uses a scoped name to:
+This CLI is invoked using `npm create discord-app`, which maps to the npm package `discord-app`. The original name `create-discord-app` was already taken on npm, so this version uses a scoped name to:
 
 * Avoid conflicts with existing packages
 * Clearly identify the author (Dipanshu Sahu)
@@ -59,7 +57,7 @@ This CLI is invoked using `npm create discord-app`, which maps to the scoped npm
 Despite the name difference, the CLI command remains clean and intuitive:
 
 ```bash
-npm create @dipanshu/discord-app
+npm create discord-app
 ```
 
 This ensures compatibility while keeping the branding aligned with its purpose.
@@ -69,17 +67,17 @@ This ensures compatibility while keeping the branding aligned with its purpose.
 ### Quick Start (Recommended)
 
 ```bash
-npm create @dipanshu/discord-app
+npm create discord-app
 ```
 
 ### Alternative Methods
 
 ```bash
 # Using npx (no installation required)
-npx @dipanshu/discord-app
+npx discord-app
 
 # Global installation
-npm install -g @dipanshu/discord-app
+npm install -g discord-app
 create-discord-app
 ```
 
@@ -100,7 +98,7 @@ create-discord-app --version
 ### Create a New Bot Project
 
 ```bash
-npm create @dipanshu/discord-app
+npm create discord-app
 ```
 
 Follow the interactive prompts.
@@ -108,13 +106,13 @@ Follow the interactive prompts.
 ### Create in Current Directory
 
 ```bash
-npm create @dipanshu/discord-app .
+npm create discord-app .
 ```
 
 ### Skip All Prompts
 
 ```bash
-npm create @dipanshu/discord-app my-bot -- --yes
+npm create discord-app my-bot -- --yes
 ```
 
 **Note**: When using `npm create`, add `--` before flags to pass them through npm.
@@ -148,7 +146,7 @@ create-discord-app my-bot --pkgname my-pkg --lang js --yes
 
 ## Templates
 
-Templates are hosted in the [`@dipanshu/discord-app-templates`](https://github.com/dipanshu447/create-discord-app-templates) repository.
+Templates are hosted in the [`discord-app-templates`](https://github.com/dipanshu447/create-discord-app-templates) repository.
 
 Each template includes:
 
@@ -163,7 +161,7 @@ Each template includes:
 
 * Use Node 18+
 * Ensure Git is installed
-* Try `npx @dipanshu/discord-app@latest` if facing cache issues
+* Try `npx discord-app@latest` if facing cache issues
 
 ## License
 
