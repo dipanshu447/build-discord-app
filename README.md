@@ -2,9 +2,11 @@
 
 <div align="center">
 
-![Discord Bot CLI](https://img.shields.io/badge/Discord-Bot%20CLI-5865F2?style=for-the-badge&logo=discord&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-24+-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES2024-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+   ![Discord Bot CLI](https://img.shields.io/badge/Discord-Bot%20CLI-5865F2?style=for-the-badge&logo=discord&logoColor=white)
+   ![Node.js](https://img.shields.io/badge/Node.js-24+-339933?style=for-the-badge&logo=node.js&logoColor=white)
+   ![JavaScript](https://img.shields.io/badge/JavaScript-ES2024-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+   [![npm](https://img.shields.io/badge/npm-v1.0.0-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/create-discord-app)
+   [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=open-source-initiative&logoColor=white)](https://opensource.org/licenses/MIT)
 
 **The fastest way to create production-ready Discord bots**
 
@@ -49,16 +51,21 @@ Interactive prompts • GitHub-powered templates • Smart conflict resolution �
 
 ## Installation
 
-### Global Installation (Recommended)
+### Quick Start (Recommended)
 
 ```bash
-npm install -g create-discord-app
+npm create discord-app
 ```
 
-### Using npx (No Installation Required)
+### Alternative Methods
 
 ```bash
+# Using npx (no installation required)
 npx create-discord-app
+
+# Global installation
+npm install -g create-discord-app
+create-discord-app
 ```
 
 ### Prerequisites
@@ -78,7 +85,7 @@ create-discord-app --version
 ### Create a New Bot Project
 
 ```bash
-create-discord-app
+npm create discord-app
 ```
 
 Follow the interactive prompts:
@@ -103,14 +110,16 @@ Next Steps:
 ### Create in Current Directory
 
 ```bash
-create-discord-app .
+npm create discord-app .
 ```
 
 ### Skip All Prompts
 
 ```bash
-create-discord-app my-bot --yes
+npm create discord-app my-bot -- --yes
 ```
+
+**Note**: When using `npm create`, add `--` before flags to pass them through npm.
 
 ## Tech Stack
 
