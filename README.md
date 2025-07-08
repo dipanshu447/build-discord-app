@@ -90,22 +90,7 @@ npm create discord-app
 
 Follow the interactive prompts:
 
-```bash (ADD COMMAND LINE IMAGE INSTEAD)
-? Project name: my-awesome-bot
-? Package name: my-awesome-bot
-? Select a language for your bot: JavaScript (recommended)
-
-✔ Creating your discord bot...
-✔ Project setup completed!
-
-Next Steps:
-  cd my-awesome-bot
-  npm install
-  Rename .env.example to .env
-  Add your bot token to .env
-  npm run register
-  npm start
-```
+![Terminal Preview](https://github.com/dipanshu447/create-discord-app/blob/main/.github/terminal-preview.jpg)
 
 ### Create in Current Directory
 
