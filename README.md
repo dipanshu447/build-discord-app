@@ -1,11 +1,11 @@
-# create-discord-app
+# build-discord-app
 
 <div align="center">
 
 ![Discord Bot CLI](https://img.shields.io/badge/Discord-Bot%20CLI-5865F2?style=for-the-badge\&logo=discord\&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge\&logo=node.js\&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-16+-339933?style=for-the-badge\&logo=node.js\&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES2024-F7DF1E?style=for-the-badge\&logo=javascript\&logoColor=black)
-[![npm](https://img.shields.io/badge/npm-v1.0.0-CB3837?style=for-the-badge\&logo=npm\&logoColor=white)](https://www.npmjs.com/package/discord-app)
+[![npm](https://img.shields.io/badge/npm-v1.0.0-CB3837?style=for-the-badge\&logo=npm\&logoColor=white)](https://www.npmjs.com/package/build-discord-app)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge\&logo=open-source-initiative\&logoColor=white)](https://opensource.org/licenses/MIT)
 
 **The fastest way to create production-ready Discord bots**
@@ -18,9 +18,9 @@ Interactive prompts • GitHub-powered templates • Smart conflict resolution �
 
 ---
 
-## What is create-discord-app?
+## What is build-discord-app?
 
-`discord-app` is a modern CLI tool that scaffolds production-ready Discord bot applications in seconds. It leverages GitHub-hosted templates and provides an intuitive setup experience with intelligent conflict resolution and automatic project configuration.
+`build-discord-app` is a modern CLI tool that scaffolds production-ready Discord bot applications in seconds. It leverages GitHub-hosted templates and provides an intuitive setup experience with intelligent conflict resolution and automatic project configuration.
 
 ### Built with ❤️ during my 100 Days of Code
 
@@ -39,58 +39,39 @@ This tool was created by [Dipanshu Sahu](https://github.com/dipanshu447) as part
 
 This CLI is built using the following technologies:
 
-* **Node.js** — Runtime environment
-* **JavaScript (ESM)** — Modern module system and syntax
-* **[@clack/prompts](https://github.com/natemoo-re/clack)** — For beautiful and interactive terminal prompts
-* **[degit](https://github.com/Rich-Harris/degit)** — For fetching templates from GitHub
-* **[fs-extra](https://github.com/jprichardson/node-fs-extra)** — Extra filesystem utilities
-* **[picocolors](https://github.com/alexeyraspopov/picocolors)** — Minimal terminal styling
-
-## Naming Notice
-
-This CLI is invoked using `npm create discord-app`, which maps to the npm package `discord-app`. The original name `create-discord-app` was already taken on npm, so this version uses a scoped name to:
-
-* Avoid conflicts with existing packages
-* Clearly identify the author (Dipanshu Sahu)
-* Maintain a familiar developer experience with `npm create` and `npx`
-
-Despite the name difference, the CLI command remains clean and intuitive:
-
-```bash
-npm create discord-app
-```
-
-This ensures compatibility while keeping the branding aligned with its purpose.
+* **Node.js** - Runtime environment
+* **JavaScript (ESM)** - Modern module system and syntax
+* **[@clack/prompts](https://github.com/natemoo-re/clack)** - For beautiful and interactive terminal prompts
+* **[degit](https://github.com/Rich-Harris/degit)** - For fetching templates from GitHub
+* **[fs-extra](https://github.com/jprichardson/node-fs-extra)** - Extra filesystem utilities
+* **[picocolors](https://github.com/alexeyraspopov/picocolors)** - Minimal terminal styling
 
 ## Installation
 
 ### Quick Start (Recommended)
 
 ```bash
-npm create discord-app
+npx build-discord-app
 ```
 
 ### Alternative Methods
 
 ```bash
-# Using npx (no installation required)
-npx discord-app
-
 # Global installation
-npm install -g discord-app
-create-discord-app
+npm install -g build-discord-app
+build-discord-app
 ```
 
 ### Prerequisites
 
-* **Node.js 18+** (v18+ recommended for optimal compatibility)
+* **Node.js 16+** (v18+ recommended for optimal compatibility)
 * **npm** or **yarn** package manager
 * **Git** (for template fetching)
 
 ### Verify Installation
 
 ```bash
-create-discord-app --version
+build-discord-app --version
 ```
 
 ## Quick Start
@@ -98,7 +79,7 @@ create-discord-app --version
 ### Create a New Bot Project
 
 ```bash
-npm create discord-app
+npx build-discord-app
 ```
 
 Follow the interactive prompts.
@@ -106,33 +87,33 @@ Follow the interactive prompts.
 ### Create in Current Directory
 
 ```bash
-npm create discord-app .
+npx build-discord-app .
 ```
 
 ### Skip All Prompts
 
 ```bash
-npm create discord-app my-bot -- --yes
+npx build-discord-app my-bot -- --yes
 ```
 
-**Note**: When using `npm create`, add `--` before flags to pass them through npm.
+**Note**: When using `npx`, add `--` before flags to pass them through.
 
 ## Usage
 
 ### Basic Syntax
 
 ```bash
-create-discord-app [project-name] [options]
+build-discord-app [project-name] [options]
 ```
 
 ### Examples
 
 ```bash
-create-discord-app
-create-discord-app my-bot
-create-discord-app .
-create-discord-app my-bot --yes
-create-discord-app my-bot --pkgname my-pkg --lang js --yes
+build-discord-app
+build-discord-app my-bot
+build-discord-app .
+build-discord-app my-bot --yes
+build-discord-app my-bot --pkgname my-pkg --lang js --yes
 ```
 
 ## Features
@@ -146,7 +127,7 @@ create-discord-app my-bot --pkgname my-pkg --lang js --yes
 
 ## Templates
 
-Templates are hosted in the [`discord-app-templates`](https://github.com/dipanshu447/create-discord-app-templates) repository.
+Templates are hosted in the [`discord-app-templates`](https://github.com/dipanshu447/discord-app-templates) repository.
 
 Each template includes:
 
@@ -159,9 +140,9 @@ Each template includes:
 
 ## Troubleshooting
 
-* Use Node 18+
+* Use Node 16+
 * Ensure Git is installed
-* Try `npx discord-app@latest` if facing cache issues
+* Try `npx build-discord-app@latest` if facing cache issues
 
 ## License
 
@@ -175,6 +156,6 @@ MIT © 2025 [Dipanshu Sahu](https://github.com/dipanshu447)
 
 ⭐ Star this project if you find it helpful!
 
-[Report Bug](https://github.com/dipanshu447/create-discord-app/issues) • [Request Feature](https://github.com/dipanshu447/create-discord-app/issues) • [Contribute](https://github.com/dipanshu447/create-discord-app/pulls)
+[Report Bug](https://github.com/dipanshu447/build-discord-app/issues) • [Request Feature](https://github.com/dipanshu447/build-discord-app/issues) • [Contribute](https://github.com/dipanshu447/build-discord-app/pulls)
 
 </div>
