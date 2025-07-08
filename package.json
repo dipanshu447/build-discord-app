@@ -1,9 +1,9 @@
 {
-  "name": "discord-app",
+  "name": "build-discord-app",
   "version": "1.0.0",
   "description": "A CLI tool to scaffold your own Discord bot project quickly",
   "bin": {
-    "create-discord-app": "./index.js"
+    "build-discord-app": "index.js"
   },
   "type": "module",
   "main": "index.js",
@@ -21,7 +21,7 @@
   "keywords": [
     "discordjs",
     "discord-app",
-    "@dipanshu/create-discord-app",
+    "build-discord-app",
     "cli",
     "scaffolding",
     "slash-commands",
