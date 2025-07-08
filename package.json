@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A CLI tool to scaffold your own Discord bot project quickly",
   "bin": {
-    "create-discord-bot": "./index.js"
+    "create-discord-app": "./index.js"
   },
   "type": "module",
   "main": "index.js",
@@ -12,23 +12,24 @@
   },
   "keywords": [
     "discordjs",
-    "discord-bot",
+    "discord-app", 
+    "create-discord-app", 
     "cli",
     "scaffolding",
     "slash-commands",
-    "create-discord-bot",
+    "discord-bot", 
     "djs",
-    "discord-bot-template",
+    "discord-app-template", 
+    "app-creation", 
+    "discordjs-app", 
     "generator",
-    "boilerplate",
-    "template",
-    "bot-creation",
-    "discordjs-bot"
+    "boilerplate"
   ],
   "author": "Dipanshu Sahu",
   "license": "MIT",
   "dependencies": {
     "@clack/prompts": "^0.11.0",
+    "degit": "^2.8.4",
     "fs-extra": "^11.3.0",
     "picocolors": "^1.1.1"
   },

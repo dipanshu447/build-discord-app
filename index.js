@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import fs from 'fs-extra';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { selectPrompt, textPrompt } from './utils/prompts.js';
 import { help, version, yesall } from './utils/flags.js';
 import { handleExistingDirConflict, isDirectoryNotEmpty } from './utils/directory.js';
@@ -9,9 +8,8 @@ import { handleExistingFileConflicts } from './utils/file.js';
 import { log, note, outro, spinner } from '@clack/prompts';
 import color from 'picocolors';
 import { parseCLIArgs } from './utils/args.js';
+import cloneTemplate from './utils/cloneTempalte.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const knownFlags = ['--version', '-v', '--help', '-h', '--yes', '-y', '--pkgname', '-p', '--lang', '-l'];
 const supportedLangs = ['js'];
 const args = process.argv.slice(2);
@@ -100,8 +98,7 @@ if (unknownFlags.length > 0) {
 
     if (!supportedLangs.includes(language)) {
         log.error(color.red(`Language "${language}" is not supported.`));
-        const tempLangFols = await fs.readdir(path.join(__dirname, 'template'));
-        note(color.whiteBright(color.bold(tempLangFols.join(', '))), 'Try one of:');
+        note(color.whiteBright(color.bold(supportedLangs.join(', '))), 'Try one of:');
         process.exit(1);
     }
 
@@ -109,8 +106,20 @@ if (unknownFlags.length > 0) {
         log.error(color.red('Invalid package name. Use: lowercase, numbers, -, ~, . only'));
         process.exit(1);
     }
+    
+    const [major] = process.versions.node.split('.').map(Number);
+    if (major < 18) {
+        log.warn(color.yellow('Node.js v18+ is recommended for best compatibility.'));
+    }
+    
+    const spin = spinner();
+    spin.start('Creating your discord bot...');
 
-    const templatePath = path.join(__dirname, 'template', language);
+    const templatePath = await cloneTemplate(language);
+    if (!templatePath || !(await fs.pathExists(templatePath))) {
+        log.error(color.red('Could not locate or download the template files.'));
+        process.exit(1);
+    }
 
     if (isCurrentDir && fs.existsSync(targetPath)) {
         if (isDirectoryNotEmpty(targetPath)) {
@@ -119,14 +128,6 @@ if (unknownFlags.length > 0) {
         }
     }
 
-    const [major] = process.versions.node.split('.').map(Number);
-    if (major < 18) {
-        log.warn(color.yellow('Node.js v18+ is recommended for best compatibility.'));
-    }
-
-    const spin = spinner();
-    spin.start('Creating your discord bot...');
-    await new Promise(res => setTimeout(res, 500));
     try {
         if (!isCurrentDir) {
             if (fs.existsSync(targetPath)) {
