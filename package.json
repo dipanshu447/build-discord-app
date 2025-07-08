@@ -1,5 +1,5 @@
 {
-  "name": "create-discord-app",
+  "name": "@dipanshu/discord-app",
   "version": "1.0.0",
   "description": "A CLI tool to scaffold your own Discord bot project quickly",
   "bin": {
@@ -16,14 +16,12 @@
     "index.js",
     "utils/",
     "LICENSE",
-    "README.md",
-    "package.json",
-    "package-lock.json"
+    "README.md"
   ],
   "keywords": [
     "discordjs",
     "discord-app",
-    "create-discord-app",
+    "@dipanshu/create-discord-app",
     "cli",
     "scaffolding",
     "slash-commands",
