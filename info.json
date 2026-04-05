@@ -1,0 +1,26 @@
+{
+  "tagline": "CLI tool to scaffold production-ready Discord bots instantly",
+  "featured": false,
+  "status": "completed",
+  "details": {
+    "overview": "A Node.js CLI tool that generates production-ready Discord bot projects using GitHub templates with interactive prompts and auto configuration.",
+    "key_features": [
+      "Interactive CLI using modern prompt system",
+      "Template-based project generation using degit",
+      "Automatic project configuration and setup",
+      "Smart handling of existing directories",
+      "Production-ready project structure"
+    ],
+    "what_i_learned": [
+      "Building CLI tools using Node.js",
+      "Working with file systems and project scaffolding",
+      "Designing developer-friendly tooling workflows",
+      "Fetching and using remote templates dynamically",
+      "Handling real-world edge cases in CLI tools"
+    ],
+    "tech_stack": {
+      "backend": ["Node.js"],
+      "tools": ["degit", "clack", "fs-extra", "picocolors"]
+    }
+  }
+}
