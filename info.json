@@ -1,26 +1,44 @@
 {
-  "tagline": "CLI tool to scaffold production-ready Discord bots instantly",
+  "portfolio_order": 6,
   "featured": false,
+  "card_tags": [
+    "CLI Tool",
+    "Node.js",
+    "Automation"
+  ],
+  "tagline": "CLI tool for generating production-ready Discord bot projects with automated setup.",
   "status": "completed",
   "details": {
-    "overview": "A Node.js CLI tool that generates production-ready Discord bot projects using GitHub templates with interactive prompts and auto configuration.",
+    "overview": "Build Discord App is a Node.js CLI tool that helps developers quickly scaffold Discord bot projects using predefined templates. It automates project setup, configuration, and folder structure generation, reducing repetitive setup work and improving development workflow.",
+    "engineering_challenges": [
+      "Designing an intuitive CLI workflow for developers",
+      "Handling project generation and file system operations safely",
+      "Managing template downloads and project configuration",
+      "Supporting existing directories without breaking user files"
+    ],
     "key_features": [
-      "Interactive CLI using modern prompt system",
-      "Template-based project generation using degit",
-      "Automatic project configuration and setup",
-      "Smart handling of existing directories",
-      "Production-ready project structure"
+      "Interactive command-line setup experience",
+      "Template-based project generation using remote repositories",
+      "Automatic project configuration and initialization",
+      "Safe handling of existing project directories",
+      "Production-ready Discord bot project structure"
     ],
     "what_i_learned": [
-      "Building CLI tools using Node.js",
+      "Building developer tools with Node.js",
       "Working with file systems and project scaffolding",
-      "Designing developer-friendly tooling workflows",
-      "Fetching and using remote templates dynamically",
-      "Handling real-world edge cases in CLI tools"
+      "Designing user-friendly CLI workflows",
+      "Managing automated project generation processes"
     ],
     "tech_stack": {
-      "backend": ["Node.js"],
-      "tools": ["degit", "clack", "fs-extra", "picocolors"]
+      "backend": [
+        "Node.js"
+      ],
+      "tools": [
+        "degit",
+        "clack",
+        "fs-extra",
+        "picocolors"
+      ]
     }
   }
 }
